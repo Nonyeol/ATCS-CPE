@@ -1,0 +1,13 @@
+{
+  "file": {
+    "size": 17348,
+    "mtime": 1785403729
+  },
+  "settings": {
+    "CHUNK_SIZE": 400,
+    "CHUNK_OVERLAP": 50,
+    "EMBEDDING_MODEL_NAME": "BAAI/bge-m3"
+  },
+  "n_chunks": 20,
+  "source_file": "ai_models_qa.txt"
+}
