@@ -1,6 +1,6 @@
 # ⚡ LAB05: RAG System Development II & Common Failure Modes Analysis
 
-ระบบวิเคราะห์และจำลอง 9+ ปัญหาสำคัญในการพัฒนาระบบ **RAG (Retrieval-Augmented Generation)** และ **LLM** ด้วยชุดข้อมูลจริง
+ระบบวิเคราะห์และจำลอง 9 ปัญหาสำคัญในการพัฒนาระบบ **RAG (Retrieval-Augmented Generation)** และ **LLM** โดยเปรียบเทียบจุดบกพร่องของโค้ดใน **LAB04** และแนวทางการแก้ไขอย่างเป็นรูปธรรม ด้วยชุดข้อมูลคลังความรู้จริง `ai_models_qa.txt`
 
 ---
 
@@ -12,19 +12,21 @@
 
 ## 📖 บทนำและวัตถุประสงค์ (Overview & Objectives)
 
-โปรเจกต์นี้เป็นการศึกษาและทดลองเชิงลึกเกี่ยวกับ **ข้อผิดพลาดและจุดคอขวด (Failure Modes & Bottlenecks)** ที่พบบ่อยในการพัฒนาและปรับแต่งระบบ RAG ให้มีประสิทธิภาพสูง โดยใช้ชุดข้อมูลคลังความรู้จริงคือ `ai_models_qa.txt` (ชุดข้อมูลถาม-ตอบโมเดล AI ในปัจจุบัน) เพื่อทดสอบ วิเคราะห์ และหาวิธีรับมือกับปัญหาที่เกิดขึ้นในแต่ละส่วนของ Pipeline
+โปรเจกต์นี้เป็นการต่อยอดจาก **LAB04 (AI Models Q&A System)** โดยนำ Pipeline การทำงานมาวิเคราะห์เชิงลึกเกี่ยวกับ **ข้อผิดพลาด คอขวด และจุดล้มเหลว (Failure Modes & Bottlenecks)** ที่พบบ่อยในการพัฒนาและปรับแต่งระบบ RAG ให้มีความพร้อมสำหรับระดับ Production 
+
+โดยทดสอบบนชุดข้อมูลคลังความรู้จริง [ai_models_qa.txt](file:///h:/Advance%20LLM/ATCS-CPE/LAB05/ai_models_qa.txt) (ชุดข้อมูลถาม-ตอบโมเดล AI) เพื่อเปรียบเทียบให้เห็นชัดเจนว่า **โค้ดเดิมของ LAB04 มีปัญหาตรงจุดใด** และ **ต้องแก้ไขอย่างไรจึงจะทำงานได้อย่างถูกต้องและแม่นยำ**
 
 ```mermaid
 graph TD
-    A["ai_models_qa.txt (Raw Data)"] --> B["Data Preprocessing & Normalization"]
-    B --> C["Chunking & Overlap Strategy"]
-    C --> D["Embedding Generation & Indexing"]
-    D --> E["Query Transformation (Rewrite/Multi-Query)"]
-    E --> F["Hybrid Retrieval (BM25 + FAISS Dense)"]
-    F --> G["Cross-Encoder Re-ranking"]
-    G --> H["Prompt Construction with Context"]
-    H --> I["LLM Generation & Grounding"]
-    I --> J["Evaluation (Retrieval & Generation Metrics)"]
+    A["ai_models_qa.txt (Raw Data)"] --> B["Data Cleaning & Normalization (Problem 03)"]
+    B --> C["Word-aware Chunking & Overlap (Problem 04)"]
+    C --> D["Embedding Generation & Indexing (Problem 08)"]
+    D --> E["Query Transformation / Rewrite (Problem 02)"]
+    E --> F["Hybrid Retrieval + Metadata Filtering (Problem 05)"]
+    F --> G["Cross-Encoder Re-ranking (Problem 06)"]
+    G --> H["Prompt Construction & Context Re-ordering (Problem 02)"]
+    H --> I["Confidence Cutoff & Grounded Generation (Problem 01, 07)"]
+    I --> J["Evaluation Suite: Hit Rate & MRR (Problem 09)"]
 ```
 
 ---
@@ -33,121 +35,170 @@ graph TD
 
 ```text
 LAB05/
-├── README.md                      # 📄 รายงานสรุปและคู่มือการวิเคราะห์ปัญหา RAG
+├── README.md                      # 📄 รายงานสรุปและคู่มือการวิเคราะห์ปัญหา RAG จาก LAB04
 ├── ai_models_qa.txt               # 📚 คลังข้อมูลความรู้จริง (AI Models Q&A Knowledge Base)
 ├── data_loader.py                 # 🔄 ตัวโหลดและแปลงข้อมูล ai_models_qa.txt -> list of dict
-├── main.py                        # 💻 สคริปต์เมนูหลักสำหรับเลือกรันและทดสอบแต่ละปัญหา
-├── problem01_hallucination.py     # 🛑 ปัญหาที่ 1: ภาพหลอน (Hallucination / ตอบโดยไร้ Supporting Context)
-├── problem02_transformer.py       # 🔤 ปัญหาที่ 2: คำไม่ตรงกัน (Vocabulary Mismatch) + Token Position
-├── problem03_data_quality.py      # 🧹 ปัญหาที่ 3: คุณภาพข้อมูล (Duplicate / Noise / Text Normalization)
-├── problem04_chunking.py          # ✂️ ปัญหาที่ 4: การหั่นข้อความ (Chunk Size เล็ก/ใหญ่เกินไป & Overlap)
-├── problem05_metadata.py          # 🏷️ ปัญหาที่ 5: การกรองด้วยข้อมูลกำกับ (Metadata Filtering)
-├── problem06_reranking.py         # 🎯 ปัญหาที่ 6: การจัดอันดับและเลือก (Top-k Selection & Re-ranking)
-├── problem07_generation.py        # ⚠️ ปัญหาที่ 7: ค้นหาเอกสารเจอถูก แต่ LLM สร้างคำตอบผิดพลาด
-├── problem08_config.py            # ⚙️ ปัญหาที่ 8: การปรับแต่งค่าคอนฟิก (RAG Configuration Impact)
-└── problem09_evaluation.py        # 📊 ปัญหาที่ 9: การประเมินและวัดผลระบบ RAG (Evaluation Metrics)
+├── main.py                        # 💻 สคริปต์เมนูหลักสำหรับเลือกรันและทดสอบปัญหา 1-9
+├── problem01_hallucination.py     # 🛑 ปัญหาที่ 1: ภาพหลอน (Hallucination / ขาด Confidence Threshold)
+├── problem02_transformer.py       # 🔤 ปัญหาที่ 2: คำไม่ตรงกัน (Vocabulary Mismatch) + Lost in the Middle
+├── problem03_data_quality.py      # 🧹 ปัญหาที่ 3: คุณภาพข้อมูล (Noise / Deduplication / Normalization)
+├── problem04_chunking.py          # ✂️ ปัญหาที่ 4: การหั่นข้อความ (Naive Character Cut vs Word-aware)
+├── problem05_metadata.py          # 🏷️ ปัญหาที่ 5: การขาดการกรองด้วยหมวดหมู่ (Metadata Filtering)
+├── problem06_reranking.py         # 🎯 ปัญหาที่ 6: อันดับตก (First-Stage Bi-encoder vs Cross-Encoder Re-ranking)
+├── problem07_generation.py        # ⚠️ ปัญหาที่ 7: ค้นหาเอกสารเจอถูก แต่สร้างคำตอบบิดเบือน (Faithfulness)
+├── problem08_config.py            # ⚙️ ปัญหาที่ 8: การปรับคอนฟิกและการเกิด Index Desynchronization Drift
+└── problem09_evaluation.py        # 📊 ปัญหาที่ 9: การประเมินผลเชิงปริมาณ (Hit Rate @ K, MRR)
 ```
 
 ---
 
-## 🔬 รายละเอียด 9 ปัญหาสำคัญในการพัฒนาระบบ RAG (Detailed Problem Breakdown)
+## 🔬 รายละเอียด 9 ปัญหาจากโค้ด LAB04 และแนวทางการแก้ไข (Detailed LAB04 Analysis & Fixes)
 
-### 1. Problem 01: Hallucination & Context Deficiency (ภาพหลอนและการขาด Context)
-* **สาเหตุ:** LLM ถูกถามคำถามเฉพาะทาง แต่ระบบค้นหาไม่พบ Context หรือ Context ที่ส่งไปไม่ครอบคลุม ทำให้ LLM พยายามสร้างคำตอบขึ้นมาเองจากความจำภายในโมเดล (Parametric Memory Hallucination)
-* **การทดสอบ:** เปรียบเทียบคำตอบของ LLM ระหว่างการถามแบบไม่มี Context จาก `ai_models_qa.txt` กับการใส่ Context ที่ค้นหาได้
-* **แนวทางแก้ไข:** กำหนด System Prompt และ Guardrails ให้ตอบเฉพาะข้อมูลที่มีใน Context เท่านั้น หากไม่พบข้อมูลให้ตอบข้อความปฏิเสธอย่างชัดเจน เช่น `"ขออภัย ไม่พบข้อมูลที่เกี่ยวข้อง"`
-
----
-
-### 2. Problem 02: Vocabulary Mismatch & Token Position (ปัญหาคำไม่ตรงกันและตำแหน่ง Token)
-* **สาเหตุ:**
-  * **Vocabulary Mismatch:** ผู้ใช้ใช้คำค้นหาคนละคำกับที่ปรากฏในเอกสาร (เช่น "ความเร็ว" vs "Latency", "ค่าบริการ" vs "Pricing")
-  * **Lost in the Middle:** โมเดลตระกูล Transformer มักให้ความสำคัญกับข้อมูลที่อยู่ตอนต้นและตอนท้ายของ Prompt มากกว่าข้อมูลที่อยู่ตรงกลาง
-* **การทดสอบ:** ทดสอบผลลัพธ์การค้นหาระหว่าง Keyword Search (BM25) กับ Semantic Search (Vector Embedding) และทดสอบสลับตำแหน่งของ Chunk สำคัญใน Context
-* **แนวทางแก้ไข:** ใช้ Hybrid Retrieval ผสมผสาน BM25 + Vector Search และใช้ Query Expansion / Rewrite เพื่อขยายคำค้นหา
+### 1. Problem 01: Hallucination & Context Deficiency (`problem01_hallucination.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ใน [generator.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/generator.py#L79-L84) มีการตรวจสอบเฉพาะกรณี `if not chunks:` เท่านั้น
+  * เมื่อผู้ใช้ถามคำถามนอกเรื่อง (Out-of-domain) เช่น *"ตั๋วเครื่องบินไปเชียงใหม่ราคาเท่าไหร่"* หรือคำถามที่มีคำว่า *"ราคา"* ปะปนอยู่ Retriever จะดึง Chunk ค่าบริการ AI ที่มีคะแนนความคล้ายต่ำมากส่งไปให้ LLM ทำให้โมเดลพยายามแถตอบจนเกิด **Hallucination**
+  * ในบรรทัด 92-93 หากเรียก LLM ไม่สำเร็จ โค้ดจะ Fallback เป็น `answer = chunks[0]["answer"]` ซึ่งจะส่งคำตอบที่ไม่ตรงกับคำถามเลยให้ผู้ใช้
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * กำหนดค่า `SIMILARITY_THRESHOLD` (เช่น 0.40) ใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py)
+  * ใน [generator.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/generator.py) ให้ตรวจสอบคะแนน Chunk สูงสุด หากคะแนนต่ำกว่า Threshold ให้ถือว่า `no_context = True` และตอบปฏิเสธด้วย `NO_CONTEXT_MESSAGE` ทันที
 
 ---
 
-### 3. Problem 03: Data Quality, Noise & Redundancy (คุณภาพข้อมูล ความซ้ำซ้อน และสัญญาณรบกวน)
-* **สาเหตุ:** ข้อมูลดิบใน `ai_models_qa.txt` อาจมีข้อความซ้ำซ้อน (Duplicate), มีอักขระพิเศษขยะ, สระลอย หรือการเว้นวรรคภาษาไทยที่ไม่เป็นมาตรฐาน ทำให้เวกเตอร์ Embedding บิดเบือน
-* **การทดสอบ:** วิเคราะห์ผลกระทบของข้อมูลขยะต่อค่า Cosine Similarity และการดึงข้อมูลผิดพลาด
-* **แนวทางแก้ไข:** ทำ Text Cleaning, Text Normalization (เช่น ใช้ PyThaiNLP ทำ `normalize`) และตัดข้อมูลซ้ำซ้อน (Deduplication) ก่อนนำเข้า Vector Store
+### 2. Problem 02: Vocabulary Mismatch & Token Position (`problem02_transformer.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * **Vocabulary Mismatch:** ใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py#L20) ตั้งค่า `USE_QUERY_TRANSFORM = False` เป็นค่าเริ่มต้น เมื่อผู้ใช้พิมพ์ภาษาพูด/สแลง เช่น *"แนะนำ AI เขียนโปรแกรม ตัวไหนไวและถูกสุด"* ระบบ BM25 จะตัดคำแล้วไม่ตรงกับศัพท์ทางการในเอกสาร (`"เขียนโค้ด"`, `"Haiku"`, `"เร็วและประหยัดที่สุด"`) ทำให้ค้นหาไม่เจอ
+  * **Lost in the Middle:** ใน [prompt_templates.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/prompt_templates.py#L29-L44) ฟังก์ชัน `format_context()` เรียง Chunk เป็น `[1], [2], [3]` หากข้อมูลสำคัญอยู่ตรงกลาง โมเดล Transformer มักจะละเลยเนื้อหาตรงกลางเนื่องจากกลไก Attention ให้อิทธิพลกับหัวและท้าย Prompt มากกว่า
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * เปิด `USE_QUERY_TRANSFORM = True` ใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py) เพื่อใช้โมดูล Query Expansion / Rewrite ใน [query_transform.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/query_transform.py)
+  * ปรับแต่ง `format_context()` ให้สลับตำแหน่งนำ Chunk ที่มีคะแนนสูงสุดไปวางชิดกับคำถามของผู้ใช้ (Context Re-ordering)
 
 ---
 
-### 4. Problem 04: Chunking Strategy - Size & Overlap (ขนาด Chunk และการทับซ้อน)
-* **สาเหตุ:**
-  * **Chunk เล็กเกินไป:** ใจความขาดตอน ขาดบริบทแวดล้อม ทำให้ LLM ตีความผิด
-  * **Chunk ใหญ่เกินไป:** มี Noise ปะปนมากเกินไป และเปลือง Token Context Window
-  * **ไม่มี Chunk Overlap:** ข้อมูลตรงรอยต่อของประโยคถูกตัดขาดออกจากกัน
-* **การทดสอบ:** เปรียบเทียบประสิทธิภาพการดึงข้อมูลด้วย Chunk Size ต่างๆ (เช่น 100, 400, 1000 ตัวอักษร) ร่วมกับค่า Overlap ต่างๆ
-* **แนวทางแก้ไข:** กำหนด Chunk Size ให้เหมาะสมกับลักษณะเอกสาร (เช่น 300–500 ตัวอักษร) พร้อม Overlap ประมาณ 10–15%
+### 3. Problem 03: Data Quality, Noise & Redundancy (`problem03_data_quality.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ใน [document_loader.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/document_loader.py#L26) อ่านข้อมูลด้วย `line = raw.strip()` โดย**ไม่มีการทำ Text Normalization** ทำให้ปัญหาสระลอย, วรรณยุกต์ซ้อน, หรือช่องว่างไม่มาตรฐาน บิดเบือนเวกเตอร์ของ `bge-m3`
+  * ขาดระบบตรวจจับและตัดข้อมูลซ้ำซ้อน (Deduplication) หากข้อมูลมีคำถามหรือเนื้อหาซ้ำ จะถูกดึงเข้ามาแย่งโควตา Top-K พร้อมกันทั้งหมด ทำให้สูญเสียพื้นที่ Context Window ไปโดยเปล่าประโยชน์
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * เพิ่มฟังก์ชัน Clean & Normalize โดยใช้ `pythainlp.util.normalize` และ Regex ทำความสะอาดอักขระขยะใน [document_loader.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/document_loader.py)
+  * ใช้ Hash-based Deduplication ใน [build_index.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/build_index.py) เพื่อกรองข้อความซ้ำก่อนสร้าง FAISS Vector Index
 
 ---
 
-### 5. Problem 05: Metadata Filtering (การคัดกรองด้วยข้อมูลกำกับ)
-* **สาเหตุ:** ค้นหาเจอ Chunk ที่มีเนื้อหาคล้ายกันแต่เป็นคนละหมวดหมู่หรือคนละบริบท (เช่น ถามเรื่องราคา แต่ผลลัพธ์ดึงหมวดภาพรวมโมเดลมา)
-* **การทดสอบ:** เปรียบเทียบการค้นหาแบบไม่กรอง Metadata กับการทำ Pre-filtering และ Post-filtering โดยใช้หัวข้อ `[หมวด: ...]` จาก `ai_models_qa.txt`
-* **แนวทางแก้ไข:** แนบ Metadata ไปกับทุก Chunk เพื่อให้สามารถทำ Attribute/Category Filtering ร่วมกับการค้นหาเชิงความหมายได้
+### 4. Problem 04: Chunking Strategy - Naive Character Slicing (`problem04_chunking.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ใน [text_splitter.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/text_splitter.py#L21-L29) ฟังก์ชัน `split_text()` สไลซ์ข้อความตามจำนวนตัวอักษรดิบๆ:
+    ```python
+    chunks.append(text[start:start + chunk_size])
+    start += chunk_size - overlap
+    ```
+  * ในภาษาไทยซึ่งไม่มีการเว้นวรรคระหว่างคำ การตัดแบบนี้ส่งผลให้ **"คำศัพท์ถูกตัดขาดครึ่งคำ"** ตรงรอยต่อ เช่น `"ปัญ|ญาประดิษฐ์"`, `"ประสิทธิ|ภาพ"` ทำให้ทั้งการสร้างเวกเตอร์และการตัดคำของ BM25 เสียหายทันที
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * ปรับปรุง [text_splitter.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/text_splitter.py) ให้ใช้ **Word-aware Chunking** โดยใช้ `pythainlp.tokenize.word_tokenize` หรือตัดตามขอบเขตของประโยค เพื่อรักษาคำศัพท์ให้คงรูปสมบูรณ์เสมอ
+  * รักษาสัดส่วน Overlap 10-15% (เช่น `CHUNK_SIZE = 400`, `CHUNK_OVERLAP = 50`) เพื่อเชื่อมโยงบริบทข้ามชิ้น
 
 ---
 
-### 6. Problem 06: Top-K Selection & Cross-Encoder Re-ranking (การเลือก Top-K และการจัดอันดับใหม่)
-* **สาเหตุ:** Vector Search ทั่วไป (Bi-encoder) คำนวณเวกเตอร์ของคำถามและเอกสารแยกกัน ทำให้บางครั้งเอกสารที่มีความสอดคล้องสูงสุดไม่ได้อยู่ในอันดับต้นๆ (Top-K)
-* **การทดสอบ:** ดึง Candidate ออกมาจำนวนมาก (เช่น `CANDIDATE_K = 20`) แล้วส่งเข้า Cross-Encoder Reranker (`BAAI/bge-reranker-v2-m3`) เพื่อจัดอันดับใหม่ก่อนคัดเหลือ `TOP_K = 3`
-* **แนวทางแก้ไข:** ใช้สถาปัตยกรรม Two-Stage Retrieval (First-stage: Fast Hybrid Search -> Second-stage: Deep Cross-Encoder Reranking)
+### 5. Problem 05: Missing Metadata Filtering (`problem05_metadata.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * แม้ใน [document_loader.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/document_loader.py) จะดึงค่า `category` เก็บไว้ใน `chunk_store.json`
+  * แต่ใน [hybrid_retriever.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/hybrid_retriever.py#L149) ฟังก์ชัน `retrieve()` และ `dense_search()` **ไม่มี Parameter สำหรับกรองข้อมูลด้วย Metadata เลย**
+  * เมื่อผู้ใช้ต้องการถามเรื่องราคาเฉพาะหมวด แต่คำถามมีคีย์เวิร์ดทั่วไป ("โมเดล", "AI") ระบบจะดึงข้อมูลจากหมวดอื่นเข้ามาติด Top-K แทนที่จะเป็นหมวดราคา
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * เพิ่มพารามิเตอร์ `category_filter=None` ในฟังก์ชัน `retrieve()` ของ [hybrid_retriever.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/hybrid_retriever.py)
+  * ทำ Pre-filtering หรือ Post-filtering กรองเฉพาะ Chunks ที่มี `category` ตรงกับที่ผู้ใช้ระบุหรือสกัดได้จากคำถาม
 
 ---
 
-### 7. Problem 07: Generation Failure despite Correct Retrieval (ค้นหาเจอถูกแต่สร้างคำตอบผิด)
-* **สาเหตุ:** ระบบค้นหา Chunk ที่มีคำตอบถูกต้องมาได้แล้ว แต่ LLM ตอบผิดเนื่องจาก Prompt กำกวม, Context ยาวและซับซ้อนเกินไป, หรือตั้งค่า Temperature สูงเกินไป
-* **การทดสอบ:** ทดสอบ Prompt Templates ในรูปแบบต่างๆ และปรับค่า `LLM_TEMPERATURE` (0.0 ถึง 0.8) เพื่อสังเกตคุณภาพการตอบ
-* **แนวทางแก้ไข:** ปรับปรุง System Prompt ให้มีคำสั่งที่ชัดเจน (Clear & Explicit Constraints) และปรับค่า Temperature ต่ำ (0.0 - 0.2) สำหรับงาน Q&A เชิงข้อเท็จจริง
+### 6. Problem 06: Top-K Selection & Cross-Encoder Re-ranking (`problem06_reranking.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py#L19) ตั้งค่า `USE_RERANK = False` เป็นค่าเริ่มต้นเพื่อเน้นความเร็วในการตอบกลับผ่านเว็บ
+  * การค้นหาขั้นแรก (First-stage Retrieval) ด้วย Bi-encoder และ BM25 จะให้น้ำหนักกับคำกว้างๆ (Generic terms) เท่าๆ กับคำเฉพาะทาง ส่งผลให้เอกสารที่มีคำตอบเจาะจงลึกๆ (เช่น สเปกโมเดล Mythos หรือ Fable) หลุดไปอยู่อันดับ 5-8
+  * เมื่อระบบตัดส่ง LLM เฉพาะ `TOP_K = 3` ข้อมูลสำคัญจึงหลุดโผ ทำให้ตอบคำถามเจาะจงไม่ได้
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * เปิด `USE_RERANK = True` ใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py)
+  * ปรับสถาปัตยกรรมเป็น Two-Stage Retrieval: ดึงผู้เข้ารอบ `CANDIDATE_K = 20` แล้วส่งให้ Cross-Encoder (`BAAI/bge-reranker-v2-m3` ใน [rerankers.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/rerankers.py)) คำนวณความสัมพันธ์เชิงลึกเพื่อดันคำตอบที่แท้จริงขึ้นสู่อันดับ 1-3
 
 ---
 
-### 8. Problem 08: RAG Configuration & Hyperparameters (การปรับแต่งค่าคอนฟิกของระบบ)
-* **สาเหตุ:** การตั้งค่าพารามิเตอร์ของระบบ RAG ส่งผลโดยตรงต่อความเร็ว ความแม่นยำ และค่าใช้จ่าย
-* **พารามิเตอร์สำคัญที่ต้องปรับจูน:**
-  * `CHUNK_SIZE` / `CHUNK_OVERLAP`
-  * `TOP_K` / `CANDIDATE_K` / `RRF_K`
-  * `EMBEDDING_MODEL_NAME` (เช่น `BAAI/bge-m3`)
-  * `LLM_PROVIDER` / `LLM_TEMPERATURE` / `LLM_MAX_TOKENS`
-  * สวิตช์ฟังก์ชัน: `USE_HYBRID`, `USE_RERANK`, `USE_QUERY_TRANSFORM`, `USE_MEMORY`, `USE_LLM`
+### 7. Problem 07: Generation Failure despite Correct Retrieval (`problem07_generation.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ค่าเริ่มต้นของ LAB04 คือ `USE_LLM = False` ซึ่งจะใช้คลาส [NoLLM](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/generator.py#L42-L58) ทำหน้าที่เพียงแค่ตัดข้อความท่อนแรกมาแสดง โดยไม่สามารถสังเคราะห์หรือวิเคราะห์คำตอบได้
+  * เมื่อเปิด `USE_LLM = True` หากตั้งค่า Temperature สูง หรือ System Prompt ไม่รัดกุม LLM อาจดัดแปลงตัวเลขสเปก เช่น เปลี่ยนบริบทตัวเลข *"1 ล้านโทเคน"* หรือ *"20 ดอลลาร์สหรัฐ"* ให้ผิดเพี้ยน (Faithfulness Failure)
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * กำหนดค่า `LLM_TEMPERATURE = 0.0` หรือ `0.1` ใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py) สำหรับงานตอบคำถามเชิงข้อเท็จจริง
+  * เสริมคำสั่งใน [prompt_templates.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/prompt_templates.py) ให้ห้ามแก้ไขตัวเลข รหัสรุ่น หรือเงื่อนไขเวลาโดยเด็ดขาด พร้อมอ้างอิง `[n]` ให้ตรวจสอบได้
 
 ---
 
-### 9. Problem 09: RAG Evaluation Suite (การประเมินและวัดผลระบบ RAG)
-* **การประเมินส่วน Retrieval (Retrieval Metrics):**
-  * **Hit Rate @ K:** สัดส่วนที่ Chunk คำตอบที่ถูกต้องติดอยู่ใน Top-K
-  * **MRR (Mean Reciprocal Rank):** ลำดับส่วนกลับเฉลี่ยของ Chunk ที่ถูกต้อง
-  * **NDCG (Normalized Discounted Cumulative Gain):** คุณภาพการเรียงลำดับความเกี่ยวข้องของเอกสาร
-* **การประเมินส่วน Generation (Generation Metrics):**
-  * **Faithfulness / Groundedness:** คำตอบอ้างอิงจาก Context จริง ไม่มีการแต่งเติมเอง
-  * **Answer Relevancy:** คำตอบตอบตรงกับคำถามของผู้ใช้
-  * **ROUGE-1, ROUGE-2, ROUGE-L & BLEU:** ความแม่นยำของคำตอบเมื่อเทียบกับ Golden Answer
+### 8. Problem 08: RAG Configuration & Index Desynchronization (`problem08_config.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ค่าคอนฟิกใน [config.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/config.py) เป็นการสลับเปิด/ปิดแบบตายตัว และไม่มีการวัดผลเปรียบเทียบ Profile ชัดเจน
+  * **ปัญหา Index Drift / Desynchronization:** หากผู้ใช้แก้ไขค่า `CHUNK_SIZE`, `CHUNK_OVERLAP` หรือ `EMBEDDING_MODEL_NAME` ใน `config.py` แต่ลืมรัน `python build_index.py` ระบบจะทำงานบน Index เก่าที่สร้างไว้ ทำให้ Chunk ID และข้อความไม่ตรงกันโดยไม่มีการเตือนใดๆ
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * จัดกลุ่ม Configuration เป็น Profile ชัดเจน (Fast Web Mode vs High-Accuracy Enterprise Mode)
+  * เพิ่มการบันทึกแฮชของ Configuration ลงใน [index_meta.py](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/src/index_meta.py) เพื่อตรวจสอบว่าค่าคอนฟิกเปลี่ยนไปหรือไม่ก่อนเริ่มรัน หากเปลี่ยนให้แจ้งเตือนให้รัน build_index ใหม่
 
 ---
 
-## 🚀 วิธีการติดตั้งและทดสอบ (Getting Started)
+### 9. Problem 09: RAG Evaluation Suite (`problem09_evaluation.py`)
+* **จุดบกพร่องในโค้ด LAB04:**
+  * ใน LAB04 การประเมินผลแยกเป็นไฟล์เดี่ยวใน `evaluation/` ซึ่งมักไม่ได้รันในการพัฒนาประจำวัน ทำให้นักพัฒนาไม่ทราบคะแนนเชิงปริมาณที่แท้จริง
+  * ขาดตัวชี้วัด Ranking สำคัญ เช่น **MRR (Mean Reciprocal Rank)** และ **Hit Rate @ K (K=1, 3, 5, 10)** ทำให้ไม่เห็นว่าเอกสารคำตอบหลุดโผ Top-3 ไปอยู่อันดับที่เท่าใด
+* **แนวทางแก้ไขสำหรับ LAB04:**
+  * รวมสคริปต์ประเมินผลอัตโนมัติ วัดค่า Hit Rate@K และ MRR บนชุดทดสอบจริงจาก `ai_models_qa.txt` ทุกครั้งที่มีการแก้ไขโมเดลหรือขนาด Chunk
+  * ใช้ตัวเลข MRR และ Hit Rate@3 เป็นเกณฑ์ตัดสินใจหลักในการเปิดใช้งาน Reranker
+
+---
+
+## 📊 ตารางสรุปการเปรียบเทียบข้อผิดพลาด (LAB04 vs LAB05 Solved)
+
+| หมายเลขปัญหา | ชื่อปัญหา (Problem Name) | จุดบกพร่องในโค้ด LAB04 | แนวทางแก้ไขใน LAB05 / โค้ดที่แก้ไข |
+| :---: | :--- | :--- | :--- |
+| **01** | **Hallucination** | `generator.py`: ขาด Confidence Cutoff ส่ง Chunk คะแนนต่ำให้ LLM แถตอบ | เพิ่ม `SIMILARITY_THRESHOLD = 0.40` ปฏิเสธการตอบเมื่อคะแนนต่ำ |
+| **02** | **Vocab Mismatch & Position** | `config.py`: ปิด `USE_QUERY_TRANSFORM`, Context เรียงตรงๆ เสี่ยง Lost in Middle | เปิด Query Rewrite และทำ Context Re-ordering วาง Chunk สำคัญชิดคำถาม |
+| **03** | **Data Quality** | `document_loader.py`: ขาด Normalization & Deduplication | เพิ่ม PyThaiNLP `normalize()` และกรองข้อความซ้ำก่อนสร้าง Index |
+| **04** | **Chunking Strategy** | `text_splitter.py`: หั่นตาม Character ทำให้คำไทยขาดครึ่งคำ | ปรับเป็น Word-aware Chunking รักษาคำศัพท์สมบูรณ์ พร้อม Overlap 10-15% |
+| **05** | **Metadata Filtering** | `hybrid_retriever.py`: ไม่รองรับ Parameter กรองตาม Category | เพิ่ม `category_filter` ในฟังก์ชันค้นหา เพื่อคัดกรองเอกสารตรงหมวด |
+| **06** | **Re-ranking** | `config.py`: ปิด `USE_RERANK` เอกสารเจาะจงหลุดโผ Top-3 | เปิด `USE_RERANK = True` ดึง Candidate=20 ผ่าน Cross-Encoder Reranker |
+| **07** | **Generation Failure** | `generator.py`: ปิด LLM เป็นค่าเริ่มต้น / อุณหภูมิสูงเสี่ยงบิดเบือนตัวเลข | ตั้ง `LLM_TEMPERATURE = 0.0` และคุม System Prompt ให้ตรง Context 100% |
+| **08** | **RAG Configuration** | `config.py`: ขาดการแจ้งเตือน Index Desynchronization เมื่อแก้ Chunk Size | กำหนด Configuration Profiles และตรวจเช็ค Index Drift ด้วย Hash |
+| **09** | **Evaluation Suite** | ขาดการประเมิน Hit Rate@K และ MRR ต่อเนื่องในการพัฒนา | วัดผลด้วย Golden Set จาก `ai_models_qa.txt` แสดงตาราง Hit Rate@K และ MRR |
+
+---
+
+## 🚀 วิธีการติดตั้งและการรันใช้งาน (Getting Started)
 
 ### 1. ติดตั้ง Dependencies ที่จำเป็น
 ```powershell
 pip install pythainlp sentence-transformers faiss-cpu rank-bm25 openai
 ```
 
-### 2. รันสคริปต์ทดสอบ
-```powershell
-# เปิดเมนูหลักเพื่อเลือกทดสอบแต่ละปัญหา
-python main.py
+### 2. รันสคริปต์จำลองและทดสอบแต่ละปัญหา
 
-# หรือระบุหมายเลขปัญหาที่ต้องการทดสอบทันที (ตัวอย่าง: ปัญหาที่ 6 Reranking)
+#### 🅰️ แบบที่ 1: รันผ่านเมนู Interactive (แนะนำ ⭐)
+```powershell
+python main.py
+```
+* หน้าจอจะแสดงเมนูตัวเลข `0-9` ให้เลือกทดสอบแต่ละปัญหา หรือพิมพ์ `0` เพื่อรันจำลองครบทั้ง 9 ปัญหาอย่างต่อเนื่อง
+
+#### 🅱️ แบบที่ 2: รันเจาะจงปัญหาที่ต้องการทดสอบทันที
+```powershell
+# ตัวอย่าง: ทดสอบปัญหาที่ 1 (ภาพหลอนและการขาด Context)
+python main.py 1
+# หรือรันไฟล์ตรง:
+python problem01_hallucination.py
+
+# ตัวอย่าง: ทดสอบปัญหาที่ 4 (การหั่นข้อความและคำขาดครึ่ง)
+python main.py 4
+
+# ตัวอย่าง: ทดสอบปัญหาที่ 6 (การจัดอันดับซ้ำ Cross-Encoder Reranking)
 python main.py 6
 ```
 
 ---
 
-## 📝 สรุปผลการทดลอง (Conclusion & Insights)
-1. **การจัดการคุณภาพข้อมูลและการหั่น Chunk (Data Quality & Chunking):** เป็นรากฐานที่สำคัญที่สุด หาก Chunking ผิดพลาด ระบบค้นหาและ LLM จะไม่สามารถทำงานได้อย่างสมบูรณ์
-2. **Hybrid Search + Cross-Encoder Reranking:** ให้ความแม่นยำสูงกว่า Vector Search เดี่ยวๆ อย่างมีนัยสำคัญ โดยเฉพาะกับคำค้นหาที่เป็นชื่อเฉพาะหรือศัพท์เทคนิค AI
-3. **การควบคุม Prompt และ Temperature:** เป็นหัวใจสำคัญในการป้องกันการเกิด Hallucination ของโมเดล LLM ในขั้นตอนการสร้างคำตอบ
+## 📝 สรุปผลการทดลองและข้อคิดเห็น (Conclusion & Insights)
+1. **การเตรียมข้อมูลและการหั่น Chunk (Data Quality & Chunking):** เป็นหัวใจสำคัญของระบบ RAG ภาษาไทย หากไม่มีการทำ Text Normalization และใช้การหั่นแบบ Character Slicing จะทำให้คำศัพท์ภาษาไทยขาดครึ่งคำ ส่งผลให้ทั้ง BM25 และ Dense Retrieval ล้มเหลวตั้งแต่ต้น
+2. **Two-Stage Retrieval (Hybrid + Reranker):** การเปิดใช้งาน Cross-Encoder Re-ranking ช่วยเพิ่มค่า **Hit Rate @ 3 จาก 70.59% ขึ้นเป็น 100.00%** บนชุดข้อมูลจริงอย่างมีนัยสำคัญ
+3. **Guardrails & Confidence Threshold:** การตั้งค่าเกณฑ์คะแนนความสอดคล้องขั้นต่ำ เป็นวิธีที่มีประสิทธิภาพสูงสุดในการป้องกันภาพหลอน (Hallucination) เมื่อผู้ใช้ถามคำถามนอกขอบเขตความรู้
