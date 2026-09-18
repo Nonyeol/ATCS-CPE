@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>LAB04 Summary Guide - RAG Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 14mm 18mm 14mm;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Sarabun', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #1e293b;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Prompt', 'Sarabun', sans-serif;
+    color: #0f172a;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  h1 {
+    font-size: 22px;
+    border-bottom: 2.5px solid #2563eb;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 14px;
+    color: #1d4ed8;
+  }
+  h2 {
+    font-size: 16px;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: #0f172a;
+  }
+  h3 {
+    font-size: 14px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    color: #1e40af;
+  }
+  p, li {
+    text-align: justify;
+  }
+  ul, ol {
+    margin-top: 4px;
+    margin-bottom: 10px;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 12px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 7px 9px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 11.5px;
+    background: #f1f5f9;
+    color: #0369a1;
+    padding: 1.5px 4.5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+  pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 11.5px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.45;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+  }
+  blockquote {
+    border-left: 4px solid #3b82f6;
+    margin: 10px 0;
+    padding: 8px 12px;
+    background: #eff6ff;
+    color: #1e40af;
+    border-radius: 0 6px 6px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 16px 0;
+  }
+  
+  /* Flowchart Styling */
+  .flowchart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 14px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .flow-step {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 14px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .step-badge {
+    display: inline-block;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .sub-desc {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .arrow-down {
+    color: #3b82f6;
+    font-weight: bold;
+    font-size: 13px;
+    margin: 4px 0;
+  }
+  .retrieval-box {
+    border: 1.5px dashed #3b82f6;
+    background: #eff6ff;
+    border-radius: 6px;
+    padding: 10px;
+    width: 95%;
+    text-align: center;
+  }
+  .retrieval-title {
+    font-weight: 700;
+    color: #1d4ed8;
+    font-size: 11.5px;
+    margin-bottom: 8px;
+  }
+  .retrieval-branches {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .branch {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: #1e293b;
+  }
+  .branch-rrf {
+    background: #fef3c7;
+    border-color: #fde68a;
+    color: #92400e;
+  }
+  .step-rerank {
+    border-color: #8b5cf6;
+    background: #faf5ff;
+  }
+  .step-rerank .step-badge {
+    background: #7c3aed;
+  }
+  .step-llm {
+    border-color: #10b981;
+    background: #ecfdf5;
+  }
+  .step-llm .step-badge {
+    background: #059669;
+  }
+  .step-memory {
+    border-color: #f59e0b;
+    background: #fffbeb;
+  }
+  .step-memory .step-badge {
+    background: #d97706;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "$", right: "$", display: false}
+        ]
+      });
+    }
+  });
+</script>
+</head>
+<body>
+<h1>📚 คู่มือสรุปเนื้อหาและการเตรียมสอบ LAB04: RAG Pipeline</h1>
+<p>เอกสารนี้รวบรวมคำอธิบายสถาปัตยกรรม, การทำงานของโค้ดทุกสคริปต์ (Script-by-Script), แนวข้อสอบปรนัย (MCQ) พร้อมเฉลย และแนวทางการแก้ปัญหาทางเทคนิค (Debugging / Troubleshooting) ของ <strong>LAB04: AI Models Question Answering System</strong></p>
+<hr />
+<h2>📑 สารบัญ</h2>
+<ol>
+<li><a href="#1-ภาพรวมสถาปัตยกรรมระบบ-architecture-overview">ภาพรวมสถาปัตยกรรมระบบ (Architecture Overview)</a></li>
+<li><a href="#2-คำอธิบายโค้ดทุกสคริปต์-script-by-script-breakdown">คำอธิบายโค้ดทุกสคริปต์ (Script-by-Script Breakdown)</a></li>
+<li><a href="#กลุ่มที่-1-สคริปต์หลักและไฟล์ควบคุม-root-scripts">กลุ่มที่ 1: สคริปต์หลักและไฟล์ควบคุม (Root Scripts)</a></li>
+<li><a href="#กลุ่มที่-2-สคริปต์แล็บทดลอง-labs-01---07">กลุ่มที่ 2: สคริปต์แล็บทดลอง (Labs 01 - 07)</a></li>
+<li><a href="#กลุ่มที่-3-โมดูลแกนหลักของระบบ-src">กลุ่มที่ 3: โมดูลแกนหลักของระบบ (src/)</a></li>
+<li><a href="#กลุ่มที่-4-ระบบประเมินและวัดผล-evaluation">กลุ่มที่ 4: ระบบประเมินและวัดผล (evaluation/)</a></li>
+<li><a href="#3-เก็งแนวข้อสอบปรนัย-multiple-choice-questions">เก็งแนวข้อสอบปรนัย (Multiple Choice Questions)</a></li>
+<li><a href="#4-แนวข้อสอบการแก้ปัญหา-troubleshooting-ปัญหานี้แก้สคริปต์ตรงไหน">แนวข้อสอบการแก้ปัญหา (Troubleshooting: ปัญหานี้แก้สคริปต์ตรงไหน)</a></li>
+<li><a href="#5-สูตรและ-metrics-สำคัญที่ต้องจำ-cheat-sheet">สูตรและ Metrics สำคัญที่ต้องจำ (Cheat Sheet)</a></li>
+</ol>
+<hr />
+<h2>1. ภาพรวมสถาปัตยกรรมระบบ (Architecture Overview)</h2>
+<p>ระบบ RAG (Retrieval-Augmented Generation) ในแล็บนี้ผสมผสานการค้นหาแบบ <strong>Hybrid Search (BM25 + FAISS Vector Search)</strong> เข้ากับการจัดอันดับใหม่ (<strong>Cross-Encoder Reranker</strong>) และสร้างคำตอบด้วย <strong>LLM</strong>:</p>
+<pre><code>&lt;div class="flowchart-container"&gt;
+  &lt;div class="flow-step user-query"&gt;
+    &lt;span class="step-badge"&gt;INPUT&lt;/span&gt;
+    &lt;strong&gt;คำถามของผู้ใช้ (User Query)&lt;/strong&gt;
+  &lt;/div&gt;
+  &lt;div class="arrow-down"&gt;↓&lt;/div&gt;
+  &lt;div class="flow-step step-transform"&gt;
+    &lt;span class="step-badge"&gt;STEP 1&lt;/span&gt;
+    &lt;strong&gt;Query Transform &amp; Normalize&lt;/strong&gt; (&lt;code&gt;src/query_transform.py&lt;/code&gt;)
+    &lt;div class="sub-desc"&gt;ตัดคำลงท้าย (ครับ/ค่ะ), ปรับคำสแลง, หรือขยายคำถามด้วย LLM (Rewrite/Multi-query)&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="arrow-down"&gt;↓&lt;/div&gt;
+  &lt;div class="retrieval-box"&gt;
+    &lt;div class="retrieval-title"&gt;STEP 2: HYBRID RETRIEVAL (&lt;code&gt;src/hybrid_retriever.py&lt;/code&gt;)&lt;/div&gt;
+    &lt;div class="retrieval-branches"&gt;
+      &lt;div class="branch branch-dense"&gt;
+        &lt;strong&gt;Dense Vector Search&lt;/strong&gt;&lt;br/&gt;
+        FAISS (&lt;code&gt;IndexFlatIP&lt;/code&gt;)&lt;br/&gt;
+        Embedding Model: &lt;code&gt;bge-m3&lt;/code&gt; (1024 dims)
+      &lt;/div&gt;
+      &lt;div class="branch branch-rrf"&gt;
+        &lt;strong&gt;Reciprocal Rank Fusion (RRF)&lt;/strong&gt;&lt;br/&gt;
+        รวมอันดับด้วยสูตร:&lt;br/&gt;
+        &lt;code&gt;Score = 1 / (60 + rank)&lt;/code&gt;
+      &lt;/div&gt;
+      &lt;div class="branch branch-sparse"&gt;
+        &lt;strong&gt;Sparse Keyword Search&lt;/strong&gt;&lt;br/&gt;
+        BM25 (&lt;code&gt;BM25Okapi&lt;/code&gt;)&lt;br/&gt;
+        Tokenize ไทยด้วย PyThaiNLP (&lt;code&gt;newmm&lt;/code&gt;)
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="arrow-down"&gt;↓ &lt;em&gt;ดึงผู้เข้ารอบ Top-20 Candidates&lt;/em&gt;&lt;/div&gt;
+  &lt;div class="flow-step step-rerank"&gt;
+    &lt;span class="step-badge"&gt;STEP 3&lt;/span&gt;
+    &lt;strong&gt;Cross-Encoder Reranker&lt;/strong&gt; (&lt;code&gt;src/rerankers.py&lt;/code&gt;)&lt;br/&gt;
+    โมเดล &lt;code&gt;BAAI/bge-reranker-v2-m3&lt;/code&gt; ประเมินคู่ (Query, Document) คัดเหลือ &lt;strong&gt;Top-3 Chunks&lt;/strong&gt;
+  &lt;/div&gt;
+  &lt;div class="arrow-down"&gt;↓&lt;/div&gt;
+  &lt;div class="flow-step step-llm"&gt;
+    &lt;span class="step-badge"&gt;STEP 4&lt;/span&gt;
+    &lt;strong&gt;Generator &amp; LLM&lt;/strong&gt; (&lt;code&gt;src/generator.py&lt;/code&gt; &amp; &lt;code&gt;src/prompt_templates.py&lt;/code&gt;)&lt;br/&gt;
+    ประกอบ Prompt ร่วมกับ Context และประวัติเก่า ส่งให้ LLM (Ollama / OpenAI / Gemini) สร้างคำตอบพร้อมเลขอ้างอิง &lt;code&gt;[n]&lt;/code&gt;
+  &lt;/div&gt;
+  &lt;div class="arrow-down"&gt;↓&lt;/div&gt;
+  &lt;div class="flow-step step-memory"&gt;
+    &lt;span class="step-badge"&gt;STEP 5&lt;/span&gt;
+    &lt;strong&gt;Conversation Memory&lt;/strong&gt; (&lt;code&gt;src/memory.py&lt;/code&gt;)&lt;br/&gt;
+    จดจำบริบทคำถาม-คำตอบ เพื่อรองรับบทสนทนาต่อเนื่อง (Multi-turn Context)
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<hr />
+<h2>2. คำอธิบายโค้ดทุกสคริปต์ (Script-by-Script Breakdown)</h2>
+<h3>กลุ่มที่ 1: สคริปต์หลักและไฟล์ควบคุม (Root Scripts)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ชื่อสคริปต์</th>
+<th style="text-align: left;">หน้าที่และการทำงาน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>config.py</code></strong></td>
+<td style="text-align: left;">ศูนย์กลางตั้งค่าทั้งโปรเจกต์ มีสวิตช์เปิด/ปิดฟีเจอร์ (<code>USE_HYBRID</code>, <code>USE_RERANK</code>, <code>USE_LLM</code>, <code>USE_MEMORY</code>), กำหนดขนาด Chunk (<code>CHUNK_SIZE=400</code>, <code>CHUNK_OVERLAP=50</code>), โมเดลที่ใช้ (<code>bge-m3</code>) และ Endpoint ของ LLM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>build_index.py</code></strong></td>
+<td style="text-align: left;">สคริปต์สร้างฐานข้อมูล Index เตรียมไว้ใช้งาน โดยรันกระบวนการ 5 ขั้น: โหลด Q&amp;A $\rightarrow$ หั่น Chunk $\rightarrow$ คำนวณ Embedding $\rightarrow$ สร้าง FAISS Index $\rightarrow$ สร้าง BM25 Index</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>main.py</code></strong></td>
+<td style="text-align: left;">รันระบบตอบคำถามบน Terminal (CLI Interactive Mode) พิมพ์ถาม-ตอบสดผ่าน Command Line พร้อมแสดงเวลาที่ใช้ในแต่ละขั้นตอน</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>app.py</code></strong></td>
+<td style="text-align: left;">Web Server ด้วย Flask สำหรับรัน Web UI ให้บริการ API Endpoint <code>/api/ask</code> (ส่งคำถามไปเข้า RAGPipeline) และ <code>/api/documents</code> (ดึงรายการ Q&amp;A)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>กลุ่มที่ 2: สคริปต์แล็บทดลอง (Labs 01 - 07)</h3>
+<p>โฟลเดอร์ <code>labs/</code> สร้างขึ้นเพื่อให้ศึกษาขั้นตอนการทำงานของ RAG ทีละสเต็ปแบบแยกชิ้น:</p>
+<ol>
+<li><strong><code>lab01_extract_text.py</code></strong>: อ่านไฟล์ดิบ <code>ai_models_qa.txt</code> แปลงเป็น List of Dict และบันทึกลง <code>outputs/extracted_text.json</code></li>
+<li><strong><code>lab02_chunking.py</code></strong>: นำข้อความ Q&amp;A มาหั่นเป็น Chunk ย่อยตามขนาดที่กำหนด บันทึกลง <code>outputs/chunks.json</code></li>
+<li><strong><code>lab03_create_embeddings.py</code></strong>: นำ Chunk ทั้งหมดมาแปลงเป็น Vector Embeddings (มิติ 1024) บันทึกลง <code>outputs/embeddings.npy</code></li>
+<li><strong><code>lab04_create_vector_db.py</code></strong>: นำเวกเตอร์มาสร้าง FAISS Vector Index (<code>document.index</code>) และบันทึก Metadata (<code>chunk_store.json</code>) ลงโฟลเดอร์ <code>vector_db/</code></li>
+<li><strong><code>lab05_query_embedding.py</code></strong>: ทดสอบแปลงประโยคคำถามตัวอย่างให้กลายเป็น Query Vector เพื่อตรวจเช็ค Dimension</li>
+<li><strong><code>lab06_similarity_search.py</code></strong>: โหลด FAISS Index แล้วทดสอบค้นหาความคล้ายคลึง (Similarity Search) ดึง Top-K Chunks</li>
+<li><strong><code>lab07_complete_retrieval.py</code></strong>: รวมสเต็ปการแปลง Query $\rightarrow$ ค้นหาใน FAISS $\rightarrow$ ดึงข้อความต้นฉบับมาแสดงผลพร้อมคะแนนความคล้ายคลึง</li>
+</ol>
+<hr />
+<h3>กลุ่มที่ 3: โมดูลแกนหลักของระบบ (<code>src/</code>)</h3>
+<ul>
+<li><strong><code>document_loader.py</code></strong>: อ่านไฟล์เอกสาร ค้นหาบรรทัด <code>[หมวด...]</code>, <code>Q:</code>, <code>A:</code> สกัดออกมาเป็น Record พร้อมบันทึกเลขบรรทัดต้นฉบับ (<code>line_no</code>)</li>
+<li><strong><code>text_splitter.py</code></strong>: ฟังก์ชัน <code>split_text()</code> ทำ Sliding Window หั่นข้อความโดยรักษา <code>overlap</code> และฟังก์ชัน <code>build_chunks()</code> นำ Question มารวมกับ Answer เพื่อให้ Vector มีความหมายครอบคลุมทั้งสองฝั่ง</li>
+<li><strong><code>embedding_model.py</code></strong>: คลาสเรียกใช้งาน <code>SentenceTransformer</code> จุดสำคัญคือเปิด <code>normalize_embeddings=True</code> เสมอ เพื่อให้ความยาวเวกเตอร์เท่ากับ 1</li>
+<li><strong><code>vector_store.py</code></strong>: ห่อหุ้ม <code>faiss.IndexFlatIP</code> (Inner Product) ใช้ค้นหาเวกเตอร์ใกล้เคียง รองรับการบันทึก (<code>save</code>) และโหลด (<code>load</code>) ไฟล์ Index</li>
+<li><strong><code>hybrid_retriever.py</code></strong>: หัวใจสำคัญของการค้นหาแบบผสม:</li>
+<li>ตัดคำไทยด้วย <code>pythainlp.tokenize.word_tokenize(..., engine="newmm")</code></li>
+<li>ตัดคำอังกฤษและตัวเลขด้วย Regex พร้อมแปลงเป็นตัวพิมพ์เล็ก (<code>.lower()</code>)</li>
+<li>ผสมผลลัพธ์ด้วยอัลกอริทึม <strong>Reciprocal Rank Fusion (RRF)</strong></li>
+<li><strong><code>retriever.py</code></strong>: ตัวค้นหาแบบ Dense (Vector Search) อย่างเดียว ใช้เป็นโมเดลพื้นฐาน (Baseline)</li>
+<li><strong><code>rerankers.py</code></strong>: ใช้ <code>CrossEncoder</code> (<code>BAAI/bge-reranker-v2-m3</code>) นำคู่ (Query, Chunk Text) มาคำนวณคะแนนร่วมกันเพื่อจัดอันดับความเกี่ยวข้องใหม่</li>
+<li><strong><code>query_transform.py</code></strong>: ดัดแปลงคำถามก่อนส่งไปค้นหา มี 2 ระดับ:</li>
+<li>ระดับ 1: <code>normalize_query()</code> แทนคำสแลงและตัดคำลงท้าย (เช่น ครับ/ค่ะ) โดยไม่ต้องใช้ AI</li>
+<li>ระดับ 2: ใช้ LLM ขยายคำถาม (<code>rewrite</code>, <code>multi_query</code>, <code>hyde</code>)</li>
+<li><strong><code>prompt_templates.py</code></strong>: เทมเพลต Prompt ที่สั่งให้ LLM ตอบโดยอ้างอิงเฉพาะเอกสารที่ดึงมาได้ และบังคับให้ใส่หมายเลขอ้างอิง <code>[1]</code>, <code>[2]</code></li>
+<li><strong><code>generator.py</code></strong>: สื่อสารกับ LLM (Ollama, OpenAI, Gemini) และมีคลาส <code>NoLLM</code> สำหรับทดสอบแบบตัดข้อความมาแสดงตรงๆ โดยไม่เรียก LLM จริง</li>
+<li><strong><code>memory.py</code></strong>: คลาส <code>ConversationMemory</code> เก็บประวัติการสนทนา รองรับการจำกัดความยาวเพื่อไม่ให้บริบทล้น และมีฟังก์ชัน <code>is_followup()</code> ตรวจว่าคำถามล่าสุดจำเป็นต้องใช้บริบทเก่าหรือไม่</li>
+<li><strong><code>rag_pipeline.py</code></strong>: คลาสศูนย์กลางที่เชื่อมต่อทุกส่วนเข้าด้วยกันตั้งแต่รับคำถาม $\rightarrow$ ปรับแต่งคำถาม $\rightarrow$ ค้นหา $\rightarrow$ จัดอันดับใหม่ $\rightarrow$ ประกอบ Prompt $\rightarrow$ ส่งให้ LLM สร้างคำตอบ</li>
+<li><strong><code>index_meta.py</code></strong>: เก็บ Metadata ของ Index (จำนวน Chunk, ชื่อโมเดล) เพื่อตรวจสอบความเข้ากันได้</li>
+</ul>
+<hr />
+<h3>กลุ่มที่ 4: ระบบประเมินและวัดผล (<code>evaluation/</code>)</h3>
+<ul>
+<li><strong><code>build_golden_set.py</code></strong>: สร้างชุดข้อสอบประเมิน <code>golden_set.json</code> อัตโนมัติ โดยสร้างคำถามออกมา 4 รูปแบบ:</li>
+<li><code>verbatim</code>: คำถามตรงตัวตามเอกสาร (วัด Upper Bound)</li>
+<li><code>slang</code>: คำถามภาษาพูด/คำสแลง</li>
+<li><code>partial</code>: คำค้นสั้นๆ แบบ Keyword</li>
+<li><code>natural</code>: คำถามธรรมชาติที่ผู้ใช้จริงมักจะพิมพ์</li>
+<li><strong><code>metrics.py</code></strong>: คำนวณค่าทางสถิติ Information Retrieval:</li>
+<li><code>Hit@k</code>: มีเอกสารที่ถูกต้องติดใน Top-K หรือไม่ (0 หรือ 1)</li>
+<li><code>Recall@k</code>: สัดส่วนเอกสารที่ถูกต้องที่ดึงมาได้เทียบกับเอกสารที่ถูกต้องทั้งหมด</li>
+<li><code>Precision@k</code>: สัดส่วนเอกสารที่ถูกต้องเทียบกับจำนวนที่ดึงมา ($k$)</li>
+<li><code>MRR (Mean Reciprocal Rank)</code>: ส่วนกลับของอันดับเอกสารที่ถูกต้องชิ้นแรก ($1/\text{rank}$)</li>
+<li><code>nDCG@k</code>: คุณภาพการจัดอันดับโดยคิดค่าน้ำหนักลดหลั่นตามตำแหน่ง ($\frac{1}{\log_2(\text{rank}+1)}$)</li>
+<li><strong><code>eval_retrieval.py</code></strong>: นำชุดข้อสอบมารันทดสอบเปรียบเทียบ 4 รูปแบบ: <code>dense_only</code> vs <code>bm25_only</code> vs <code>hybrid</code> vs <code>hybrid+rerank</code></li>
+<li><strong><code>eval_generation.py</code></strong>: ประเมินคุณภาพคำตอบของ LLM ในแง่:</li>
+<li><code>faithfulness</code>: สัดส่วนคำตอบที่สอดคล้องกับเอกสาร (เช็คว่ามี Hallucination หรือไม่)</li>
+<li><code>correctness</code>: สัดส่วนคำตอบที่ตรงกับคำตอบมาตรฐาน (Reference Answer)</li>
+<li><code>relevance</code>: ความตรงประเด็นกับคำถาม</li>
+<li><code>refused</code>: ตรวจว่าระบบปฏิเสธตอบเมื่อไม่มีข้อมูลหรือไม่</li>
+</ul>
+<hr />
+<h2>3. เก็งแนวข้อสอบปรนัย (Multiple Choice Questions)</h2>
+<h3>ข้อที่ 1 (FAISS &amp; Similarity)</h3>
+<p><strong>โจทย์:</strong> ใน <code>vector_store.py</code> การใช้ <code>faiss.IndexFlatIP</code> (Inner Product) จะให้ผลลัพธ์เทียบเท่ากับ Cosine Similarity ก็ต่อเมื่อเงื่อนไขใดเป็นจริง?<br />
+- ก. ขนาดของเวกเตอร์ต้องเท่ากับ 768 มิติ<br />
+- ข. เวกเตอร์ทั้งหมดต้องผ่านการ Normalize ให้มีความยาวเป็น 1 หน่วย (<code>normalize_embeddings=True</code>) ✅ <em>(เฉลย)</em><br />
+- ค. ต้องเปิดใช้งาน BM25 ร่วมด้วย<br />
+- ง. ข้อมูลคำถามและคำตอบต้องอยู่ในบรรทัดเดียวกัน</p>
+<hr />
+<h3>ข้อที่ 2 (Hybrid Search &amp; RRF)</h3>
+<p><strong>โจทย์:</strong> สูตร Reciprocal Rank Fusion (RRF) ใน <code>hybrid_retriever.py</code> คือ $\text{Score} = \sum \frac{1}{k + \text{rank}}$ ทำไมต้องนำ "อันดับ (Rank)" มาคำนวณ แทนที่จะใช้คะแนนจริง (Raw Score)?<br />
+- ก. เพราะคะแนนของ Dense (0 ถึง 1) และ BM25 (0 ถึง 30+) มีสเกลที่ต่างกันมาก นำมาบวกกันตรงๆ ไม่ได้ ✅ <em>(เฉลย)</em><br />
+- ข. เพราะ FAISS ไม่อนุญาตให้ดึงคะแนนจริงออกมา<br />
+- ค. เพื่อลดขนาด Memory ของระบบลงครึ่งหนึ่ง<br />
+- ง. เพราะ BM25 ให้คะแนนเป็นเลขจำนวนเต็มเท่านั้น</p>
+<hr />
+<h3>ข้อที่ 3 (Bi-Encoder vs Cross-Encoder)</h3>
+<p><strong>โจทย์:</strong> เพราะเหตุใดในขั้นตอนการค้นหาเอกสาร จึงต้องใช้ Bi-Encoder ดึงเอกสารออกมาก่อน (Top-20) แล้วจึงใช้ Cross-Encoder มาทำ Rerank ให้เหลือ Top-3?<br />
+- ก. เพราะ Cross-Encoder ไม่สามารถคำนวณและทำ Index เวกเตอร์ล่วงหน้าได้ ทำให้มีความเร็วช้ามากหากต้องค้นหาเอกสารทั้งหมด ✅ <em>(เฉลย)</em><br />
+- ข. เพราะ Cross-Encoder แม่นยำน้อยกว่า Bi-Encoder<br />
+- ค. เพราะ Bi-Encoder มีขนาดโมเดลที่ใหญ่กว่า Cross-Encoder<br />
+- ง. เพราะ Cross-Encoder ไม่รองรับภาษาไทย</p>
+<hr />
+<h3>ข้อที่ 4 (Information Retrieval Metrics)</h3>
+<p><strong>โจทย์:</strong> หากระบบค้นหาคืน ID ของเอกสารมาเป็น <code>[12, 5, 88, 3]</code> และเอกสารเฉลยที่ถูกต้องคือ <code>[5]</code> ค่า <strong>Hit@1</strong>, <strong>Hit@2</strong> และ <strong>MRR</strong> มีค่าเท่าใด?<br />
+- ก. Hit@1 = 1, Hit@2 = 1, MRR = 1.0<br />
+- ข. Hit@1 = 0, Hit@2 = 1, MRR = 0.5 ✅ <em>(เฉลย)</em><br />
+- ค. Hit@1 = 0, Hit@2 = 0, MRR = 0.25<br />
+- ง. Hit@1 = 1, Hit@2 = 0, MRR = 0.5<br />
+<em>(วิธีคิด: เอกสาร 5 อยู่ในอันดับที่ 2 ดังนั้น Hit@1 = 0, Hit@2 = 1 และ MRR = 1/2 = 0.5)</em></p>
+<hr />
+<h3>ข้อที่ 5 (Chunking &amp; Overlap)</h3>
+<p><strong>โจทย์:</strong> วัตถุประสงค์หลักของการกำหนดค่า <code>CHUNK_OVERLAP = 50</code> ใน <code>config.py</code> คืออะไร?<br />
+- ก. เพื่อเพิ่มจำนวนข้อความให้ Vector DB มีขนาดใหญ่ขึ้น<br />
+- ข. ป้องกันไม่ให้ใจความสำคัญขาดตอนบริเวณรอยต่อระหว่างชิ้นข้อความ ✅ <em>(เฉลย)</em><br />
+- ค. เพื่อให้โมเดลประมวลผลคำตอบได้เร็วขึ้น<br />
+- ง. เพื่อลดการใช้หน่วยความจำ RAM</p>
+<hr />
+<h2>4. แนวข้อสอบการแก้ปัญหา (Troubleshooting: ปัญหานี้แก้สคริปต์ตรงไหน)</h2>
+<h3>ปัญหาที่ 1: เปลี่ยนชื่อโมเดล Embedding แล้วระบบแจ้ง Dimension Mismatch</h3>
+<ul>
+<li><strong>อาการ:</strong> เปลี่ยน <code>EMBEDDING_MODEL_NAME</code> ใน <code>config.py</code> แล้วเกิด Error ใน FAISS</li>
+<li><strong>สาเหตุ:</strong> เวกเตอร์เดิมที่สร้างไว้ใน <code>vector_db/document.index</code> มีมิติไม่ตรงกับโมเดลใหม่</li>
+<li><strong>วิธีแก้:</strong> ต้องรันสคริปต์ <code>build_index.py</code> ใหม่เสมอ (<code>python build_index.py</code>) เพื่อสร้าง Index ใหม่ให้ตรงกับโมเดล</li>
+</ul>
+<hr />
+<h3>ปัญหาที่ 2: การค้นหาด้วยคำภาษาไทยใน BM25 ได้ผลลัพธ์แย่มาก</h3>
+<ul>
+<li><strong>อาการ:</strong> ค้นหาคำศัพท์ภาษาไทยไม่เจอ หรือจับคู่ผิดพลาด</li>
+<li><strong>ไฟล์ที่ต้องเข้าไปตรวจสอบ:</strong> <code>src/hybrid_retriever.py</code></li>
+<li><strong>จุดที่ต้องแก้:</strong> ฟังก์ชัน <code>tokenize_thai()</code> ตรวจสอบว่าได้ติดตั้งและเรียกใช้งาน <code>pythainlp.tokenize.word_tokenize(text, engine="newmm")</code> หรือไม่ เพราะหากไม่ได้ติดตั้ง ระบบจะตกไปใช้วิธีสำรองตัดทีละ 3 ตัวอักษร (<code>n-gram</code>) ซึ่งทำให้ความแม่นยำต่ำลงอย่างมาก</li>
+</ul>
+<hr />
+<h3>ปัญหาที่ 3: บอทจำบริบทบทสนทนาก่อนหน้าไม่ได้ (Multi-turn Fail)</h3>
+<ul>
+<li><strong>อาการ:</strong> พอถามคำถามต่อเนื่อง เช่น "แล้วรุ่นนี้ราคาเท่าไหร่" บอทไม่รู้ว่า "รุ่นนี้" หมายถึงโมเดลใด</li>
+<li><strong>จุดที่ต้องตรวจสอบและแก้ไข:</strong></li>
+<li>ไฟล์ <code>config.py</code>: เปิด <code>USE_MEMORY = True</code></li>
+<li>ไฟล์ <code>src/memory.py</code>: ตรวจสอบว่าโควตาบทสนทนา (<code>MEMORY_MAX_TURNS</code>) น้อยเกินไปจนถูกลบทิ้งหรือไม่</li>
+<li>ไฟล์ <code>src/query_transform.py</code>: เปิดฟังก์ชัน Query Rewriting เพื่อเปลี่ยนคำถามกำกวมให้กลายเป็นคำถามที่สมบูรณ์ก่อนนำไปค้นหา</li>
+</ul>
+<hr />
+<h3>ปัญหาที่ 4: LLM ตอบมั่ว แต่งคำตอบขึ้นมาเอง (Hallucination)</h3>
+<ul>
+<li><strong>อาการ:</strong> คำถามที่ไม่มีในเอกสาร แต่บอทแต่งเรื่องขึ้นมาตอบ</li>
+<li><strong>จุดที่ต้องแก้ไข:</strong></li>
+<li>ไฟล์ <code>src/prompt_templates.py</code>: ปรับปรุง System Prompt โดยกำชับว่า <em>"หากข้อมูลที่ให้มาไม่เพียงพอ ให้ตอบว่า 'ไม่พบข้อมูล' ห้ามคาดเดาหรือสร้างข้อมูลขึ้นมาเอง"</em></li>
+<li>ไฟล์ <code>config.py</code>: ปรับลดค่า <code>LLM_TEMPERATURE</code> ให้ต่ำลง (เช่น <code>0.0</code> ถึง <code>0.2</code>) เพื่อลดความสุ่ม</li>
+</ul>
+<hr />
+<h2>5. สูตรและ Metrics สำคัญที่ต้องจำ (Cheat Sheet)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">หัวข้อ</th>
+<th style="text-align: left;">สูตร / สมการ</th>
+<th style="text-align: left;">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Cosine Similarity</strong></td>
+<td style="text-align: left;">$\cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{|\mathbf{A}| |\mathbf{B}|}$</td>
+<td style="text-align: left;">หาก $|\mathbf{A}| = |\mathbf{B}| = 1$ จะเหลือเพียง $\mathbf{A} \cdot \mathbf{B}$ (Inner Product)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>RRF Score</strong></td>
+<td style="text-align: left;">$\text{RRF}(d) = \sum_{m \in M} \frac{1}{k + r_m(d)}$</td>
+<td style="text-align: left;">$k=60$, $r_m(d)$ คืออันดับของเอกสาร $d$ ในระบบค้นหา $m$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Hit@k</strong></td>
+<td style="text-align: left;">$1 \text{ if } (\text{Relevant} \cap \text{Top}_k) \neq \emptyset \text{ else } 0$</td>
+<td style="text-align: left;">ติด 1 ใน $k$ อันดับแรกหรือไม่</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MRR</strong></td>
+<td style="text-align: left;">$\text{MRR} = \frac{1}{\text{rank}_{\text{first_hit}}}$</td>
+<td style="text-align: left;">ส่วนกลับของอันดับเอกสารที่ถูกต้องตัวแรก</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>nDCG@k</strong></td>
+<td style="text-align: left;">$\text{nDCG}_k = \frac{\text{DCG}_k}{\text{IDCG}_k}$</td>
+<td style="text-align: left;">$\text{DCG}<em>k = \sum</em>{i=1}^k \frac{2^{rel_i} - 1}{\log_2(i + 1)}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Faithfulness</strong></td>
+<td style="text-align: left;">$\frac{</td>
+<td style="text-align: left;">\text{Tokens}(\text{Answer}) \cap \text{Tokens}(\text{Context})</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -11,12 +11,28 @@
 ---
 
 คู่มือและคำอธิบายโดยละเอียดสามารถอ่านได้ที่:
-👉 **[04-RAG-Project/README.md](file:///h:/Advance%20LLM/ATCS-CPE/LAB04/04-RAG-Project/README.md)**
+👉 **[04-RAG-Project/README.md](04-RAG-Project/README.md)**
 
-## 🚀 Quick Start
+## 🐳 Quick Start ด้วย Docker (แนะนำ)
+
+ต้องติดตั้งและเปิด Docker Desktop ก่อน จากนั้นรัน:
+
 ```powershell
 cd 04-RAG-Project
-python build_index.py
-python app.py
+docker build -t atcs-lab04-rag:latest .
+docker run -d `
+  --name atcs-lab04-rag `
+  -p 5000:5000 `
+  -v lab04-huggingface-cache:/root/.cache/huggingface `
+  atcs-lab04-rag:latest
 ```
-เปิดใช้งาน Web UI ที่: **http://127.0.0.1:5000**
+
+ติดตามการดาวน์โหลดโมเดลและการเริ่มระบบ:
+
+```powershell
+docker logs -f atcs-lab04-rag
+```
+
+เปิดใช้งาน Web UI ที่: **[http://localhost:5000](http://localhost:5000)**
+
+การรันครั้งแรกอาจใช้เวลาสักครู่ เนื่องจากระบบต้องดาวน์โหลดโมเดล `BAAI/bge-m3` ส่วนขั้นตอนโดยละเอียด การแก้ปัญหา และวิธีรันโดยไม่ใช้ Docker อยู่ใน [คู่มือโปรเจกต์](04-RAG-Project/README.md)
