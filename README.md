@@ -38,8 +38,9 @@
 
 ```text
 Progress : [████████████████░░░░░░░░░░░░] 55% Completed
-Completed: LAB01, LAB04, LAB05, Data Pipeline Project
-Ongoing  : LAB02, LAB03, Final-Project
+Completed: LAB03, LAB04, LAB05, Data Pipeline Project
+Theory   : LAB01, LAB02
+Ongoing  : Final-Project
 Upcoming : LAB06 - LAB10 (Agentic AI Series)
 ```
 
@@ -49,9 +50,9 @@ Upcoming : LAB06 - LAB10 (Agentic AI Series)
 
 | รายการ (Task / Module) | หัวข้อการเรียนรู้ (Topic & Domain) | เทคโนโลยีหลัก (Key Technologies) | สถานะ (Status) | ลิงก์โฟลเดอร์ (Directory) |
 | :---: | :--- | :--- | :---: | :---: |
-| **LAB01** | **RAG Foundations & Web Retrieval**<br>การสร้างระบบ RAG เบื้องต้น, แปลงข้อความเป็น Embedding และค้นหาคำตอบผ่าน FAISS พร้อม Web UI | `Sentence-Transformers`, `FAISS`, `Flask`, `Python` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB01/`](./LAB01/) |
-| **LAB02** | **LLM Data Processing**<br>การเตรียมความพร้อมและประมวลผลชุดข้อมูลสำหรับโมเดลภาษาขนาดใหญ่ | `Data Preprocessing`, `Text Cleansing` | ![In Progress](https://img.shields.io/badge/Status-In_Progress-yellow?style=flat-square) | [📂 `LAB02/`](./LAB02/) |
-| **LAB03** | **LLM Retrieval System**<br>ระบบการค้นคืนข้อมูลเชิงความหมายและการจัดทำดัชนีเวกเตอร์ | `Vector Indexing`, `Similarity Search` | ![In Progress](https://img.shields.io/badge/Status-In_Progress-yellow?style=flat-square) | [📂 `LAB03/`](./LAB03/) |
+| **LAB01** | **LLM Foundations (Lecture & Theory)**<br>สถาปัตยกรรมพื้นฐานของโมเดลภาษาขนาดใหญ่ (Transformer, Attention Mechanism, Tokenizer) | `Transformer Architecture`, `Theory` | ![Theory](https://img.shields.io/badge/Status-Lecture_Theory-informational?style=flat-square) | [📂 `LAB01/`](./LAB01/) |
+| **LAB02** | **LLM Data Processing (Lecture & Theory)**<br>หลักการและทฤษฎีการเตรียมชุดข้อมูลสำหรับโมเดลภาษาขนาดใหญ่ (Data Preprocessing, Cleaning) | `Data Processing Theory` | ![Theory](https://img.shields.io/badge/Status-Lecture_Theory-informational?style=flat-square) | [📂 `LAB02/`](./LAB02/) |
+| **LAB03** | **LLM Retrieval System (RAG Foundations & Web UI)**<br>ระบบ RAG ค้นหาคำตอบจากฐานความรู้ Q&A ผ่าน Embedding (`MiniLM`) + FAISS Vector Store พร้อม Web App | `Sentence-Transformers`, `FAISS`, `Flask`, `Python` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB03/`](./LAB03/) |
 | **LAB04** | **AI Models Q&A System (Production RAG)**<br>สถาปัตยกรรม Hybrid Search (FAISS + BM25), BGE-M3 Embedding, Reranking, Evaluation Suite และ Dockerized App | `BAAI/bge-m3`, `BM25`, `FAISS`, `Docker`, `Flask` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB04/`](./LAB04/) |
 | **LAB05** | **RAG Failure Modes Analysis & Optimization**<br>การจำลองและแก้ไข 9 ปัญหาคอขวด RAG: Hallucination, Chunking, Word-aware Slicing, Metadata, Reranking และ Hit Rate@K Benchmark | `PyThaiNLP`, `Cross-Encoder`, `Evaluation (MRR/Hit@K)` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB05/`](./LAB05/) |
 | **LAB06** | **RAG Application System**<br>การพัฒนาระบบแอปพลิเคชัน RAG สู่การประยุกต์ใช้งานจริงในองค์กร | `Fullstack RAG`, `API Integration` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB06/`](./LAB06/) |
@@ -157,9 +158,9 @@ python run_pipeline.py all
 ATCS-CPE/
 ├── README.md                                  # 📌 หน้ารวม Dashboard โครงการและข้อมูลผู้จัดทำ (หน้านี้)
 ├── Final-Project/                             # 🚀 โครงงานปลายภาค (Course Capstone Project)
-├── LAB01/                                     # 💻 RAG Lab พื้นฐาน (Embedding + FAISS + Web UI)
-├── LAB02/                                     # 💻 LLM Data Processing
-├── LAB03/                                     # 💻 LLM Retrieval System
+├── LAB01/                                     # 📖 LLM Foundations (Lecture & Theory)
+├── LAB02/                                     # 📖 LLM Data Processing (Lecture & Theory)
+├── LAB03/                                     # 💻 LLM Retrieval System (RAG Foundations & Web UI)
 ├── LAB04/                                     # 💻 AI Models Q&A System (Production RAG & Docker)
 │   └── 04-RAG-Project/                        # 🐳 โฟลเดอร์ระบบ RAG ฉบับเต็ม (Web UI, Evaluation, Docker)
 ├── LAB05/                                     # 🔬 วิเคราะห์ 9 ปัญหาและจุดล้มเหลวของระบบ RAG (Failure Modes)
