@@ -37,8 +37,8 @@
 ## 📊 สรุปความคืบหน้าภาพรวม (Progress Overview Dashboard)
 
 ```text
-Progress : [████████████████░░░░░░░░░░░░] 55% Completed
-Completed: LAB03, LAB04, LAB05, Data Pipeline Project
+Progress : [██████████████████░░░░░░░░░░░░] 60% Completed
+Completed: LAB03, LAB04, LAB05, LAB07, Data Pipeline Project
 Theory   : LAB01, LAB02
 Ongoing  : Final-Project
 Upcoming : LAB06 - LAB10 (Agentic AI Series)
@@ -56,7 +56,7 @@ Upcoming : LAB06 - LAB10 (Agentic AI Series)
 | **LAB04** | **AI Models Q&A System (Production RAG)**<br>สถาปัตยกรรม Hybrid Search (FAISS + BM25), BGE-M3 Embedding, Reranking, Evaluation Suite และ Dockerized App | `BAAI/bge-m3`, `BM25`, `FAISS`, `Docker`, `Flask` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB04/`](./LAB04/) |
 | **LAB05** | **RAG Failure Modes Analysis & Optimization**<br>การจำลองและแก้ไข 9 ปัญหาคอขวด RAG: Hallucination, Chunking, Word-aware Slicing, Metadata, Reranking และ Hit Rate@K Benchmark | `PyThaiNLP`, `Cross-Encoder`, `Evaluation (MRR/Hit@K)` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB05/`](./LAB05/) |
 | **LAB06** | **RAG Application System**<br>การพัฒนาระบบแอปพลิเคชัน RAG สู่การประยุกต์ใช้งานจริงในองค์กร | `Fullstack RAG`, `API Integration` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB06/`](./LAB06/) |
-| **LAB07** | **Agentic AI I**<br>ระบบเอเจนต์อัจฉริยะ การวางแผนและการเรียกใช้เครื่องมือ (Tool Calling & Function Calling) | `AI Agents`, `Function Calling`, `LLM Chains` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB07/`](./LAB07/) |
+| **LAB07** | **Module 06 Risk & Knowledge Services**<br>ระบบประเมินความเสี่ยง หลักฐาน ความรู้ และ route safety สำหรับ Smart Travel Assistant | `FastAPI`, `Pydantic`, `PostgreSQL`, `Qdrant`, `MLflow`, `Docker` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB07/`](./LAB07/) |
 | **LAB08** | **Agentic AI II**<br>การทำงานร่วมกันของหลายเอเจนต์ (Multi-Agent Collaboration & Orchestration) | `Multi-Agent`, `LangGraph / CrewAI` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB08/`](./LAB08/) |
 | **LAB09** | **Agentic AI III**<br>ระบบเอเจนต์ทำงานอิสระ หน่วยความจำระยะยาว และ Guardrails เชิงลึก | `Autonomous Agents`, `Memory Systems` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB09/`](./LAB09/) |
 | **LAB10** | **Advanced Topics & Systems Optimization**<br>การปรับแต่งประสิทธิภาพขั้นสูง การประเมินผลและการสเกลระบบ | `Optimization`, `Load Testing`, `Monitoring` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB10/`](./LAB10/) |
@@ -165,7 +165,7 @@ ATCS-CPE/
 │   └── 04-RAG-Project/                        # 🐳 โฟลเดอร์ระบบ RAG ฉบับเต็ม (Web UI, Evaluation, Docker)
 ├── LAB05/                                     # 🔬 วิเคราะห์ 9 ปัญหาและจุดล้มเหลวของระบบ RAG (Failure Modes)
 ├── LAB06/                                     # 💻 RAG Application System (Upcoming)
-├── LAB07/                                     # 🤖 Agentic AI I - Tool Calling (Upcoming)
+├── LAB07/                                     # ✅ Module 06 Risk & Knowledge Services (Completed)
 ├── LAB08/                                     # 🤖 Agentic AI II - Multi-Agent (Upcoming)
 ├── LAB09/                                     # 🤖 Agentic AI III - Autonomous Agents (Upcoming)
 ├── LAB10/                                     # 💻 Advanced Topics & Performance Tuning (Upcoming)

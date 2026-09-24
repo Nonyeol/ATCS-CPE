@@ -1,7 +1,10 @@
 # LAB07: Module 06 — Risk & Knowledge Services
 
+> **Status: ✅ Complete (implementation and verification completed)**
+
 **รายวิชา:** Advanced Topic in Computer Software (ATCS-CPE)  
 **โปรเจกต์หลัก:** [Smart Travel Assistant](https://github.com/PROxTAE/travel-safety-ai)  
+**ผู้จัดทำ:** นายรัชชานนท์ ศรีไชย (`116730462005-3`) — GitHub [@Nonyeol](https://github.com/Nonyeol)
 **ผู้รับผิดชอบ:** Nonyeol — Module 06 Engineer  
 **Git subtree source:** `services/risk-knowledge/`
 
@@ -67,7 +70,7 @@ flowchart LR
 ## 5. ผลการตรวจสอบ
 
 - Phase 0–2 merge เข้า `main` แล้ว
-- Phase 3–8 implementation อยู่ใน [PR #93](https://github.com/PROxTAE/travel-safety-ai/pull/93) เพื่อรอ review
+- Phase 3–8 implementation อยู่ใน [PR #93](https://github.com/PROxTAE/travel-safety-ai/pull/93) และจัดทำรายงานครบตามขอบเขตของ Module 06
 - `87 tests passed`, coverage `83.51%`
 - Ruff lint/format, Mypy, Compose และ security checks ผ่านตามรายงาน M06
 
