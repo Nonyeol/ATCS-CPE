@@ -41,7 +41,8 @@ Progress : [██████████████████░░░░�
 Completed: LAB03, LAB04, LAB05, LAB07, Data Pipeline Project
 Theory   : LAB01, LAB02
 Ongoing  : Final-Project
-Upcoming : LAB06 - LAB10 (Agentic AI Series)
+Delivered: LAB06 (P5 tools; team integration pending)
+Upcoming : LAB08 - LAB10 (Agentic AI Series)
 ```
 
 ---
@@ -55,7 +56,7 @@ Upcoming : LAB06 - LAB10 (Agentic AI Series)
 | **LAB03** | **LLM Retrieval System (RAG Foundations & Web UI)**<br>ระบบ RAG ค้นหาคำตอบจากฐานความรู้ Q&A ผ่าน Embedding (`MiniLM`) + FAISS Vector Store พร้อม Web App | `Sentence-Transformers`, `FAISS`, `Flask`, `Python` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB03/`](./LAB03/) |
 | **LAB04** | **AI Models Q&A System (Production RAG)**<br>สถาปัตยกรรม Hybrid Search (FAISS + BM25), BGE-M3 Embedding, Reranking, Evaluation Suite และ Dockerized App | `BAAI/bge-m3`, `BM25`, `FAISS`, `Docker`, `Flask` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB04/`](./LAB04/) |
 | **LAB05** | **RAG Failure Modes Analysis & Optimization**<br>การจำลองและแก้ไข 9 ปัญหาคอขวด RAG: Hallucination, Chunking, Word-aware Slicing, Metadata, Reranking และ Hit Rate@K Benchmark | `PyThaiNLP`, `Cross-Encoder`, `Evaluation (MRR/Hit@K)` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB05/`](./LAB05/) |
-| **LAB06** | **RAG Application System**<br>การพัฒนาระบบแอปพลิเคชัน RAG สู่การประยุกต์ใช้งานจริงในองค์กร | `Fullstack RAG`, `API Integration` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB06/`](./LAB06/) |
+| **LAB06** | **COPIE — Curriculum & Skill Tools (P5)**<br>หน้าที่: จัดทำข้อมูลหลักสูตร 4 ปี/141 หน่วยกิต พัฒนาเครื่องมือค้นวิชาและรวมหน่วยกิต แบบประเมิน 12 ข้อ/คะแนน 6 ด้าน พร้อมชุดทดสอบและเอกสารส่งต่อทีม RAG | `Python`, `Pydantic`, `RapidFuzz`, `JSON`, `pytest` | ![Delivered](https://img.shields.io/badge/Status-P5_Delivered-success?style=flat-square) | [📂 `LAB06/`](./LAB06/) |
 | **LAB07** | **Module 06 Risk & Knowledge Services**<br>ระบบประเมินความเสี่ยง หลักฐาน ความรู้ และ route safety สำหรับ Smart Travel Assistant | `FastAPI`, `Pydantic`, `PostgreSQL`, `Qdrant`, `MLflow`, `Docker` | ![Completed](https://img.shields.io/badge/Status-Completed-success?style=flat-square) | [📂 `LAB07/`](./LAB07/) |
 | **LAB08** | **Agentic AI II**<br>การทำงานร่วมกันของหลายเอเจนต์ (Multi-Agent Collaboration & Orchestration) | `Multi-Agent`, `LangGraph / CrewAI` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB08/`](./LAB08/) |
 | **LAB09** | **Agentic AI III**<br>ระบบเอเจนต์ทำงานอิสระ หน่วยความจำระยะยาว และ Guardrails เชิงลึก | `Autonomous Agents`, `Memory Systems` | ![Planned](https://img.shields.io/badge/Status-Planned-lightgrey?style=flat-square) | [📂 `LAB09/`](./LAB09/) |
@@ -164,7 +165,10 @@ ATCS-CPE/
 ├── LAB04/                                     # 💻 AI Models Q&A System (Production RAG & Docker)
 │   └── 04-RAG-Project/                        # 🐳 โฟลเดอร์ระบบ RAG ฉบับเต็ม (Web UI, Evaluation, Docker)
 ├── LAB05/                                     # 🔬 วิเคราะห์ 9 ปัญหาและจุดล้มเหลวของระบบ RAG (Failure Modes)
-├── LAB06/                                     # 💻 RAG Application System (Upcoming)
+├── LAB06/                                     # ✅ COPIE P5: ข้อมูลหลักสูตร ค้นวิชา แบบประเมิน/คะแนน และ tests
+│   ├── backend/app/modules/tools/             # Curriculum Tool + Skill Assessment Tool ที่ผมพัฒนา
+│   ├── data/                                 # ข้อมูลหลักสูตร แบบประเมิน และสรุปส่งทีม RAG
+│   └── docs/handoffs/                         # รายงานส่งมอบและหลักฐานตรวจข้อมูล
 ├── LAB07/                                     # ✅ Module 06 Risk & Knowledge Services (Completed)
 ├── LAB08/                                     # 🤖 Agentic AI II - Multi-Agent (Upcoming)
 ├── LAB09/                                     # 🤖 Agentic AI III - Autonomous Agents (Upcoming)

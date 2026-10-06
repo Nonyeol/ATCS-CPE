@@ -1,0 +1,25 @@
+{
+  "assessment_id": "skill_v1",
+  "title": "ประเมินประสบการณ์ทักษะวิศวกรรมคอมพิวเตอร์",
+  "scale": [
+    {"value": 0, "label": "ยังไม่เคยทำ"},
+    {"value": 1, "label": "เคยเห็นตัวอย่าง"},
+    {"value": 2, "label": "เคยลองทำโดยมีคนช่วย"},
+    {"value": 3, "label": "ทำได้ด้วยตนเอง"},
+    {"value": 4, "label": "ทำได้และอธิบายให้ผู้อื่นได้"}
+  ],
+  "questions": [
+    {"id": "q1", "text": "เคยสร้างหน้าเว็บด้วย HTML, CSS และ JavaScript แล้วทดสอบการแสดงผล", "weights": {"frontend": 1.0}},
+    {"id": "q2", "text": "เคยพัฒนาเว็บหลายหน้าด้วย React, Vue หรือ Next.js", "weights": {"frontend": 1.0}},
+    {"id": "q3", "text": "เคยเขียน REST API และเชื่อมต่อฐานข้อมูล", "weights": {"backend": 1.0}},
+    {"id": "q4", "text": "เคยออกแบบตารางฐานข้อมูลและเขียนคำสั่ง SQL เพื่อค้นข้อมูล", "weights": {"backend": 1.0}},
+    {"id": "q5", "text": "เคยตั้งค่า IP, subnet, router หรือ switch ในห้องปฏิบัติการ", "weights": {"network": 1.0}},
+    {"id": "q6", "text": "เคยใช้ Wireshark ตรวจแพ็กเก็ตเพื่อวิเคราะห์ปัญหาเครือข่าย", "weights": {"network": 1.0}},
+    {"id": "q7", "text": "เคยเขียนโปรแกรม Arduino หรือ ESP32 เพื่ออ่านค่าเซนเซอร์", "weights": {"embedded": 1.0}},
+    {"id": "q8", "text": "เคยต่อวงจรดิจิทัลหรือทดลองออกแบบวงจรด้วย FPGA", "weights": {"embedded": 1.0}},
+    {"id": "q9", "text": "เคยใช้ Python กับ pandas หรือ numpy เพื่อวิเคราะห์ข้อมูล", "weights": {"ai_data": 1.0}},
+    {"id": "q10", "text": "เคยใช้ชุดข้อมูลฝึกและทดสอบโมเดล Machine Learning", "weights": {"ai_data": 1.0}},
+    {"id": "q11", "text": "เคยตรวจหาช่องโหว่ SQL injection หรือ XSS ในเว็บสำหรับฝึกทดสอบ", "weights": {"cybersecurity": 1.0}},
+    {"id": "q12", "text": "เคยฝึกโจทย์ CTF หรือใช้เครื่องมือทดสอบความปลอดภัยในสภาพแวดล้อมที่ได้รับอนุญาต", "weights": {"cybersecurity": 1.0}}
+  ]
+}

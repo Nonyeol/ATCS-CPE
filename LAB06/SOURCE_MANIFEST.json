@@ -1,0 +1,119 @@
+{
+  "source_repository": "https://github.com/PROxTAE/COPIE-AI-computer-engineer-RMUTT-knowlage",
+  "source_commit": "51a2be32663a54b2ae0ed256efa964609a644899",
+  "prepared_date": "2026-10-07",
+  "scope": "P5 Curriculum Tool + Skill Assessment Tool; shared contract included as a dependency",
+  "files": [
+    {
+      "path": "backend/app/modules/tools/__init__.py",
+      "sha256": "65eb81692fcf922c04a460ca810cfcaf8098cc7bcfd1ca41c8a6d54d8e8b13bd",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/curriculum/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/curriculum/loader.py",
+      "sha256": "818ff2d0e759a187d84e59a9555e12d329e044f6f7a8d997a6ddd76fa67e2351",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/curriculum/service.py",
+      "sha256": "932286ffe49fdd3a8c6a61b0673c09adc3e897b1539fbf30db4410ecd17a4a2d",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/curriculum/validate.py",
+      "sha256": "9c6f172c142dfe00397a92c82e5b0bef138db6f9cbf7e6b84d004db4d892ad5e",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/README.md",
+      "sha256": "5186d1418275d737bfc61189f13cbc66c004cc113700661b44f4a9a991ffe8cb",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/skill/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/skill/loader.py",
+      "sha256": "d8838977eb18fc22248022627dce5bc26236d68551f4bcefdea7062c75d21a27",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/skill/service.py",
+      "sha256": "468bf943171abbc0d1f7bdff38422d71280f9c39ac8a7b8f5b040c77d46be02a",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/tests/test_curriculum_data.py",
+      "sha256": "a1f7ca0b716ba838ad6e784e8dc25a6e8d8c3383a55119cb14cc3db543edf8e3",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/tests/test_curriculum_service.py",
+      "sha256": "391ac74e726b76ab2be4ca0298bd79e629e952f5a6f3f58fb30d6e6d769c423a",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/modules/tools/tests/test_skill.py",
+      "sha256": "486d2635e95f29407a62ba7c7081ec715fbc1560b4010379f639b0c3518713ea",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "data/curriculum/curriculum.json",
+      "sha256": "aaf22eb09fa3bb3719441aaf6be3882b819393e1634f0e7f45b0ab899560007b",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "data/curriculum/README.md",
+      "sha256": "cccba4e72d206ccb6c30d528f8c0c0b7fcb35b81bc2b4d18ab708906f8ced31a",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "data/curriculum/SOURCE.md",
+      "sha256": "e63eb1e9c15d73d9b763597388d12a56701e45ed0e655ab27b8ed08e3bdb6c7f",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "data/assessment/README.md",
+      "sha256": "aeaaff835dd42e4e1881dc00123d9a27e5ef08a5160c5013f9411f7a456a0c9b",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "data/assessment/skill_v1.json",
+      "sha256": "1b59184e7f65136fc53bc19c97ccbea16995355b153fcd0f101bfd7a75b26ed5",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "backend/app/schemas/contract.py",
+      "sha256": "b6c2c4b247d28900863a9e566d2e9782111748e76bddef5582a87f29f0fe6d43",
+      "ownership": "shared team contract (dependency)"
+    },
+    {
+      "path": "data/knowledge/study-plan-overview.md",
+      "sha256": "de73233ffad8875d9e7afc79c851ce3fff46a5aa3af2e0df6060a1ee667a0f3d",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "docs/handoffs/P5-curriculum-skill.md",
+      "sha256": "7c8773c9cfb6767cd11a693eac19f3c9aa1686300f8074a82b80abb0351e1fc3",
+      "ownership": "P5 work and documentation"
+    },
+    {
+      "path": "IMPLEMENTATION_PLANS/05_CURRICULUM_SKILL_TOOLS.md",
+      "sha256": "d0feb8d1c1cc3c9fecf8dba2829c536ff47eabb0022c4ba97e12bb034980fd3c",
+      "ownership": "P5 work and documentation"
+    }
+  ],
+  "checksum_format": "UTF-8 with LF line endings"
+}
